@@ -1,7 +1,7 @@
 # Twitter Debate Analyser 
 
 ## Description 
-This project entails creating a bot that analyses debates that occur on crypto X (formerly known as Twitter). Here is the outline of the bounty as described on the ETH Torors Github: 
+This project entails creating a bot that analyses debates about crypto on X (formerly known as Twitter). Here is the outline of the bounty as described on the ETH Torus Github: 
 - Analysis tool that identifies debates and conflicts between influential Crypto Twitter accounts
 - Measuring issue importance, influence of involved accounts, and stance of participants
 - Generates detailed summaries of debates including main points, arguments of both sides, and underlying narratives
