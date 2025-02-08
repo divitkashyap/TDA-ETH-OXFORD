@@ -131,35 +131,36 @@ def entityCount(file):
         for ent in doc.ents:
             if ent.text == "#":
                 continue 
-            elif ent.text.isdigit:
-                continue
+            # elif ent.text.isdigit:
+            #     continue
             else :
-                entities.append({"entity": ent.text, "count": 1})
+                entities.append(ent.text)
                 recurringEntities.append(ent.text)
 
         returnThis = []
         
         for ent in entities:
             entCount = 0
-            
+        
             for ent2 in entities: 
                 
                 if not ent or not ent2 in recurringEntities:
                     if ent == ent2: 
                         entCount+=1
+                
+                entities.remove(ent)
 
             if entCount >= 2: 
                 recurringEntities.append(ent)
-                count.append(entCount)
                 returnThis.append({"entity": ent, "appears": entCount})
-                entities.remove(ent)
+                
 
     
     return returnThis
 
 
 
-print(entityCount())
+print(entityCount("positiveTweets.txt"))
 
         
 
