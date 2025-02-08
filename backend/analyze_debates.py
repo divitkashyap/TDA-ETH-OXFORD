@@ -70,6 +70,9 @@ influentialTweets = []
 negativeTweets = []
 positiveTweets = []
 neutralTweets = []
+positiveLikeCount = 0
+negativeLikeCount = 0
+neutralLikeCount = 0
 
 with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
@@ -82,10 +85,13 @@ with open("tweets.json","r") as file1:
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            negativeLikeCount = negativeLikeCount + tweet["Likes"]
         if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            positiveLikeCount = positiveLikeCount + tweet["Likes"]
         else:
             neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            neutralLikeCount = neutralLikeCount + tweet["Likes"]
         
         tokens = word_tokenize(text.lower())
         tokens = [word for word in tokens if word.isalnum()]  
