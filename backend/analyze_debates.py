@@ -2,6 +2,11 @@ import nltk
 import json
 
 from nltk.sentiment import SentimentIntensityAnalyzer
+from nltk import word_tokenize, pos_tag, ne_chunk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
 nltk.download("vader_lexicon")
 sia = SentimentIntensityAnalyzer()
 
@@ -17,10 +22,15 @@ def get_sentiment(text):
         return "Neutral 😐"
     
 
-with open("tweets.txt","r",encoding="utf-8") as file1: 
+with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
-    print(tweets)
     for tweet in tweets:
         text = tweet["Tweet"]
-        print(f"Tweet: {tweet} → Sentiment: {get_sentiment(tweet)}")
+        tokens = word_tokenize(text)
+        tagged = pos_tag(tokens)
+        entityRec = ne_chunk(tagged)
+        print(f"Tweet: {text} → Sentiment: {get_sentiment(text)}")
+       
+        
+                
 
