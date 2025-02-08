@@ -53,14 +53,18 @@ processed_docs = []
 influentialTweets = []
 negativeTweets = []
 positiveTweets = []
+<<<<<<< HEAD
 neutralTweets = []
+=======
+entities = []
+>>>>>>> 4956f4a38d8593a7d82c79d318b60205784e95e4
 with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
     tweets = json.load(file1)
    
     for tweet in tweets:
         text = tweet["Tweet"]
         
-        if tweet["Likes"] > 1000:
+        if tweet["Likes"] > 5000:
             influentialTweets.append(tweet)
        
         if (get_sentiment(text)) == "Negative 😡":
@@ -76,9 +80,11 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
         processed_docs.append(tokens)
         tagged = pos_tag(tokens)
         entityRec = ne_chunk(tagged)
+
         file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
         doc = nlp(text)
         
+<<<<<<< HEAD
         # for ent in doc.ents:
         #     print(f"Entity: {ent.text}, Label: {ent.label_}")
 
@@ -94,6 +100,12 @@ with open('neutralTweets.txt', 'w') as negativeFile:
     for tweet in neutralFile:
         neutralFile.write(tweet)
 
+=======
+        for ent in doc.ents:
+            entities.append(ent.text.lower())
+        
+                
+>>>>>>> 4956f4a38d8593a7d82c79d318b60205784e95e4
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
@@ -108,6 +120,21 @@ def displayPage():
       + ", ".join([tweet["Handle"] for tweet in influentialTweets]))
     return homepage
 
+def entityCount():
+    recurringEntities = []
+    for ent in entities:
+        entCount = 0
+        for ent2 in entities: 
+            if not ent or not ent2 in recurringEntities:
+                if ent == ent2: 
+                    entCount+=1
+                    recurringEntities.append({"entity" : ent, "mentioned" : entCount})
+                    entities.remove(ent)
+            
+    return recurringEntities
 
-print(displayPage())
-print(negativeTweets)
+
+print(entityCount())
+
+        
+
