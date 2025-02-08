@@ -64,14 +64,14 @@ def get_sentiment(text):
         return "Negative 😡"
     else:
         return "Neutral 😐"
-    
-
 
 processed_docs = []
 influentialTweets = []
 negativeTweets = []
 positiveTweets = []
+neutralTweets = []
 entities = []
+
 with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
     tweets = json.load(file1)
    
@@ -83,10 +83,11 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
         if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
+        else:
+            neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+        
         tokens = word_tokenize(text.lower())
         tokens = [word for word in tokens if word.isalnum()]  
         tokens = [word for word in tokens if word not in stop_words] 
@@ -95,40 +96,24 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
         entityRec = ne_chunk(tagged)
 
         file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
-        doc = nlp(text)
         
-        
-        for ent in doc.ents:
-            if ent.text == "#":
-                continue
+        doc = nlp(text) 
 
-            # if ent.text.isdigit:
-            #     continue
+with open('negativeTweets.txt', 'w') as negativeFile:
+    for tweet in negativeTweets:
+        negativeFile.write(tweet)
 
-            isCoin = False
-            isCountry = False
-            
-            
-            for name, ticker in crypto_dict.items():
-                if ent.text in ticker:
-                    entities.append(name.lower())
-                    isCoin = True
-                    break
+with open('positiveTweets.txt', 'w') as positiveFile:
+    for tweet in positiveFile:
+        positiveFile.write(tweet)
 
-            for country, aliases in country_abbreviations.items():
-                for alias in aliases:
-                    if ent.text in alias.lower()  :
-                        entities.append(country.lower())
-                        isCountry = True
-                        break
-            
-            if  isCoin == False and  isCountry == False:
-                entities.append(ent.text.lower())
+with open('neutralTweets.txt', 'w') as neutralFile:
+    for tweet in neutralFile:
+        neutralFile.write(tweet)
 
-            
 
-            
-            
+    for ent in doc.ents:
+        entities.append(ent.text.lower())
         
                 
 id2word = corpora.Dictionary(processed_docs)
