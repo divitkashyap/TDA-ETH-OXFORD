@@ -19,8 +19,13 @@ rawData =response.text
 data = json.loads(rawData)
 
 for tweet in data:
-    print("Twitter handle:" + tweet["user"]["username"])
-    print("Tweet:" + tweet["text"] + "\nEND OF TWEET\n")
+    print("Twitter handle: " + tweet["user"]["username"])
+    print("Followers: " + tweet["user"]["followers_count"])
+   # print("Likes: "+ tweet["like_count"])
+    #print("Views: "+ tweet["view_count"])
+   # print("Retweets: "+ tweet["retweet_count"])
+    print("Tweet: " + tweet["text"] + "\nEND OF TWEET\n")
+
     print("\n")
 
 
