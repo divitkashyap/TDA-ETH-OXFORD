@@ -16,16 +16,22 @@ const BackgroundAnimation: React.FC = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return; // ✅ Check if canvas exists
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return; // ✅ Check if context is available
 
-    // Set up canvas size
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Function to resize canvas dynamically
+    const resizeCanvas = () => {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
 
-    let particles: any[] = [];
+    resizeCanvas(); // ✅ Initial setup
+    window.addEventListener("resize", resizeCanvas);
+
+    let particles: Particle[] = [];
     const particleCount = 50;
 
     class Particle {
@@ -36,9 +42,9 @@ const BackgroundAnimation: React.FC = () => {
       speedY: number;
 
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 2 + 1;
+        this.x = Math.random() * (canvas?.width || 0);
+        this.y = Math.random() * (canvas?.height || 0);
+        this.radius = Math.random() * 3 + 1;
         this.speedX = Math.random() * 2 - 1;
         this.speedY = Math.random() * 2 - 1;
       }
@@ -47,14 +53,16 @@ const BackgroundAnimation: React.FC = () => {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-        if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+        // Bounce inside the canvas
+        if (canvas && (this.x > canvas.width || this.x < 0)) this.speedX *= -1;
+        if (canvas && (this.y > canvas.height || this.y < 0)) this.speedY *= -1;
       }
 
       draw() {
+        if (!ctx) return; // ✅ Ensure ctx is available
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"; // ✅ Adjusted glow effect
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; // ✅ Glow effect
         ctx.fill();
       }
     }
@@ -66,23 +74,20 @@ const BackgroundAnimation: React.FC = () => {
 
     // Animation loop
     const animate = () => {
+      if (!ctx || !canvas) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((particle) => {
         particle.update();
         particle.draw();
       });
+
       requestAnimationFrame(animate);
     };
 
     animate();
 
-    // Resize canvas on window resize
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", resizeCanvas);
-
+    // Cleanup function
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
