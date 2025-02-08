@@ -9,7 +9,7 @@ payload = {
      "min_likes": 2000,
             }
 headers = {
-    "Authorization": "dt_$LSO2gvfJtB6UENHrgs-SS1w0zfSKmAr1gfkbBRmTkIg",
+    "Authorization": API_KEY,
     "Content-Type": "application/json"
 }
 
