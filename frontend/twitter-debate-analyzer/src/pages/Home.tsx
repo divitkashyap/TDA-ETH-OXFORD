@@ -18,37 +18,37 @@ function Home() {
         <CardContainer>
                         <SongCard>
                             <h1>
-                                Your Power
+                                Tweet 1
                             </h1>
                             <h3>
-                                Billie Eilish
+                                Elon's Musk
                             </h3>
                         </SongCard>
 
                         <SongCard>
                             <h1 className="cardSong">
-                                Perfect
+                                Tweet 2
                             </h1>
                             <h3 className="cardArtist">
-                                Ed Sheeran
+                                Kanye's West
                             </h3>
                         </SongCard>
 
                         <SongCard>
                             <h1 className="cardSong">
-                                Sparks
+                                Tweet 3
                             </h1>
                             <h3 className="cardArtist">
-                                Coldplay
+                                Bill's Gates
                             </h3>
                         </SongCard>
 
                         <SongCard>
                             <h1 className="cardSong">
-                                Tush
+                                Tweet 4
                             </h1>
                             <h3 className="cardArtist">
-                                Fandango!
+                                Steve's Jobs
                             </h3>
                         </SongCard>
                     </CardContainer>
