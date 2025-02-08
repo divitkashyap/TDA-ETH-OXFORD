@@ -9,7 +9,7 @@ payload = {
      "min_likes": 2000,
             }
 headers = {
-    "Authorization": "REMOVED",
+    "Authorization": API_KEY,
     "Content-Type": "application/json"
 }
 
