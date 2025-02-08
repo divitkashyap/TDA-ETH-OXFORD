@@ -15,6 +15,22 @@ nltk.download('stopwords')
 nltk.download('punkt')
 stop_words = set(stopwords.words('english'))
 
+crypto_dict = {
+    "Bitcoin": "BTC",
+    "Ethereum": "ETH",
+    "Solana": "SOL",
+    "Ripple": "XRP",
+    "Dogecoin": "DOGE",
+    "Cardano": "ADA",
+    "Polkadot": "DOT",
+    "Chainlink": "LINK"
+}
+
+country_abbreviations = {
+    "United States": ["USA", "U.S.", "America", "United States of America"],
+    "United Kingdom": ["UK", "U.K.", "Britain", "England", "Great Britain"]
+}
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -81,18 +97,49 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
         file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
         doc = nlp(text)
         
+        
         for ent in doc.ents:
-            entities.append(ent.text.lower())
+            if ent.text == "#":
+                continue
+
+            # if ent.text.isdigit:
+            #     continue
+
+            isCoin = False
+            isCountry = False
+            
+            
+            for name, ticker in crypto_dict.items():
+                if ent.text in ticker:
+                    entities.append(name.lower())
+                    isCoin = True
+                    break
+
+            for country, aliases in country_abbreviations.items():
+                for alias in aliases:
+                    if ent.text in alias.lower()  :
+                        entities.append(country.lower())
+                        isCountry = True
+                        break
+            
+            if  isCoin == False and  isCountry == False:
+                entities.append(ent.text.lower())
+
+            
+
+            
+            
         
                 
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
+
 #print(corpus)
 
 lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
+topics = lda_model.print_topics(num_words=10)
 
-# topics = lda_model.print_topics(num_words=5)
 
 def displayPage():
     homepage = ("The top posts about crypto this week were from the following accounts" 
@@ -101,16 +148,26 @@ def displayPage():
 
 def entityCount():
     recurringEntities = []
+    returnThis = []
+    count = []
     for ent in entities:
         entCount = 0
+        
         for ent2 in entities: 
+            
             if not ent or not ent2 in recurringEntities:
                 if ent == ent2: 
                     entCount+=1
-                    recurringEntities.append({"entity" : ent, "mentioned" : entCount})
-                    entities.remove(ent)
-            
-    return recurringEntities
+
+        if entCount >= 2: 
+            recurringEntities.append(ent)
+            count.append(entCount)
+            returnThis.append({"entity": ent, "appears": entCount})
+            entities.remove(ent)
+
+    
+    return returnThis
+
 
 
 print(entityCount())
