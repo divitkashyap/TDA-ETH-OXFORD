@@ -1,8 +1,13 @@
 import requests
-
+import json
 url = "https://apis.datura.ai/twitter"
 
-payload = {"query": "crypto"}
+payload = {
+    "query": "crypto",
+    "sort": "Top",
+    "lang": "en",
+     "min_likes": 2000,
+            }
 headers = {
     "Authorization": "REMOVED",
     "Content-Type": "application/json"
@@ -10,4 +15,13 @@ headers = {
 
 response = requests.request("POST", url, json=payload, headers=headers)
 
-print(response.text)
+rawData =response.text
+data = json.loads(rawData)
+
+for tweet in data:
+    print("Twitter handle:" + tweet["user"]["username"])
+    print("Tweet:" + tweet["text"] + "\nEND OF TWEET\n")
+    print("\n")
+
+
+
