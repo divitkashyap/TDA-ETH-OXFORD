@@ -10,6 +10,7 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
 
+nltk.download("vader_lexicon")
 nltk.download('stopwords')
 nltk.download('punkt')
 stop_words = set(stopwords.words('english'))
@@ -51,30 +52,51 @@ def get_sentiment(text):
 
 
 processed_docs = []
-with open("tweets.json","r") as file1, open("sentiment.json","a+") as file2: 
+influentialTweets = []
+negativeTweets = []
+positiveTweets = []
+with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
     tweets = json.load(file1)
+   
     for tweet in tweets:
         text = tweet["Tweet"]
+        
+        if tweet["Likes"] > 1000:
+            influentialTweets.append(tweet)
+       
+        if (get_sentiment(text)) == "Negative 😡":
+            negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+
+        if(get_sentiment(text)) == "Positive 😊":
+            positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+
         tokens = word_tokenize(text.lower())
-        tokens = [word for word in tokens if word.isalnum()]  # Remove punctuation
+        tokens = [word for word in tokens if word.isalnum()]  
         tokens = [word for word in tokens if word not in stop_words] 
         processed_docs.append(tokens)
         tagged = pos_tag(tokens)
         entityRec = ne_chunk(tagged)
-        file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n")
+        file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
         doc = nlp(text)
-        for ent in doc.ents:
-            print(f"Entity: {ent.text}, Label: {ent.label_}")
+        
+        # for ent in doc.ents:
+        #     print(f"Entity: {ent.text}, Label: {ent.label_}")
         
                 
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
 #print(corpus)
-# Train LDA model
+
 lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
 
-# Print the topics
-topics = lda_model.print_topics(num_words=5)
-for topic in topics:
-    print(topic)
+# topics = lda_model.print_topics(num_words=5)
+
+def displayPage():
+    homepage = ("The top posts about crypto this week were from the following accounts" 
+      + ", ".join([tweet["Handle"] for tweet in influentialTweets]))
+    return homepage
+
+
+print(displayPage())
+print(negativeTweets)
