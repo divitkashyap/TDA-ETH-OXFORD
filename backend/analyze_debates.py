@@ -15,6 +15,22 @@ nltk.download('stopwords')
 nltk.download('punkt')
 stop_words = set(stopwords.words('english'))
 
+crypto_dict = {
+    "Bitcoin": "BTC",
+    "Ethereum": "ETH",
+    "Solana": "SOL",
+    "Ripple": "XRP",
+    "Dogecoin": "DOGE",
+    "Cardano": "ADA",
+    "Polkadot": "DOT",
+    "Chainlink": "LINK"
+}
+
+country_abbreviations = {
+    "United States": ["USA", "U.S.", "America", "United States of America"],
+    "United Kingdom": ["UK", "U.K.", "Britain", "England", "Great Britain"]
+}
+
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
@@ -48,55 +64,103 @@ def get_sentiment(text):
         return "Negative 😡"
     else:
         return "Neutral 😐"
-    
-
 
 processed_docs = []
 influentialTweets = []
 negativeTweets = []
 positiveTweets = []
-with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
+neutralTweets = []
+
+with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
    
     for tweet in tweets:
         text = tweet["Tweet"]
         
-        if tweet["Likes"] > 1000:
+        if tweet["Likes"] > 5000:
             influentialTweets.append(tweet)
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
         if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
+        else:
+            neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+        
         tokens = word_tokenize(text.lower())
         tokens = [word for word in tokens if word.isalnum()]  
         tokens = [word for word in tokens if word not in stop_words] 
         processed_docs.append(tokens)
         tagged = pos_tag(tokens)
         entityRec = ne_chunk(tagged)
-        file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
-        doc = nlp(text)
-        
-        # for ent in doc.ents:
-        #     print(f"Entity: {ent.text}, Label: {ent.label_}")
+
+with open('negativeTweets.txt', 'w') as negativeFile:
+    for tweet in negativeTweets:
+        negativeFile.write(tweet)
+
+with open('positiveTweets.txt', 'w') as positiveFile:
+    for tweet in positiveTweets:
+        positiveFile.write(tweet)
+
+with open('neutralTweets.txt', 'w') as neutralFile:
+    for tweet in neutralTweets:
+        neutralFile.write(tweet)
         
                 
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
-#print(corpus)
 
 lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
+topics = lda_model.print_topics(num_words=10)
 
-# topics = lda_model.print_topics(num_words=5)
 
 def displayPage():
     homepage = ("The top posts about crypto this week were from the following accounts" 
       + ", ".join([tweet["Handle"] for tweet in influentialTweets]))
     return homepage
 
+def entityCount(file):
+    with open(file,"r") as tweets:
+        entities = []
+        recurringEntities = []
+        
+        for tweet in tweets: 
+            doc = nlp(tweet) 
+        
+        for ent in doc.ents:
+            if ent.text == "#":
+                continue 
+            # elif ent.text.isdigit:
+            #     continue
+            else :
+                entities.append(ent.text)
+                recurringEntities.append(ent.text)
 
-print(displayPage())
-print(negativeTweets)
+        returnThis = []
+        
+        for ent in entities:
+            entCount = 0
+        
+            for ent2 in entities: 
+                
+                if not ent or not ent2 in recurringEntities:
+                    if ent == ent2: 
+                        entCount+=1
+                
+                entities.remove(ent)
+
+            if entCount >= 2: 
+                recurringEntities.append(ent)
+                returnThis.append({"entity": ent, "appears": entCount})
+                
+
+    
+    return returnThis
+
+
+
+print(entityCount("positiveTweets.txt"))
+
+        
+
