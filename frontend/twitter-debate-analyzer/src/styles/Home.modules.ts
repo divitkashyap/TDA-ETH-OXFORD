@@ -1,4 +1,53 @@
-import styled from "styled-components"
+import styled from "styled-components";
+
+export const GradientBG = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow: hidden;
+  background: linear-gradient(40deg, rgb(108, 0, 162), rgb(0, 17, 82));
+  top: 0;
+  left: 0;
+  z-index: -1;
+
+  svg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .gradients-container {
+    filter: url(#goo) blur(40px);
+    width: 100%;
+    height: 100%;
+  }
+
+  .g1, .g2, .g3, .g4, .g5 {
+    position: absolute;
+    mix-blend-mode: hard-light;
+    width: 80%;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    animation: moveInCircle 30s ease infinite;
+  }
+
+  .g1 { background: radial-gradient(circle at center, rgba(18, 113, 255, 0.8) 0, rgba(18, 113, 255, 0) 50%); }
+  .g2 { background: radial-gradient(circle at center, rgba(221, 74, 255, 0.8) 0, rgba(221, 74, 255, 0) 50%); }
+  .g3 { background: radial-gradient(circle at center, rgba(100, 220, 255, 0.8) 0, rgba(100, 220, 255, 0) 50%); }
+  .g4 { background: radial-gradient(circle at center, rgba(200, 50, 50, 0.8) 0, rgba(200, 50, 50, 0) 50%); }
+  .g5 { background: radial-gradient(circle at center, rgba(180, 180, 50, 0.8) 0, rgba(180, 180, 50, 0) 50%); }
+
+  @keyframes moveInCircle {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 
 export const BigWrapper = styled.div`
 position: relative;
