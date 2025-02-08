@@ -3,12 +3,14 @@ import json
 import spacy 
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import word_tokenize, pos_tag, ne_chunk
+from nltk.tokenize import sent_tokenize
 import gensim
 import gensim.corpora as corpora
 from gensim.models.ldamodel import LdaModel
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
+from collections import Counter
 
 nltk.download("vader_lexicon")
 nltk.download('stopwords')
@@ -70,22 +72,44 @@ influentialTweets = []
 negativeTweets = []
 positiveTweets = []
 neutralTweets = []
+numNeutral = 0 
+numPositive = 0 
+numNegative = 0 
+
+def extract_summary(tweets):
+    text = " ".join([tweet["Tweet"] for tweet in tweets])
+    sentences = sent_tokenize(text)
+    
+    # Count word frequency
+    words = nltk.word_tokenize(text.lower())
+    word_freq = Counter(words)
+
+    # Score sentences based on word frequency
+    ranked_sentences = sorted(sentences, key=lambda s: sum(word_freq[word] for word in s.split()), reverse=True)
+    
+    # Return top 3 sentences as summary
+    return " ".join(ranked_sentences[:3])
+
 
 with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
-   
+    print(extract_summary(tweets))
     for tweet in tweets:
         text = tweet["Tweet"]
+
         
         if tweet["Likes"] > 5000:
             influentialTweets.append(tweet)
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            numNegative+=1
         if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            numPositive+=1
         else:
             neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            numNeutral+=1
         
         tokens = word_tokenize(text.lower())
         tokens = [word for word in tokens if word.isalnum()]  
@@ -114,6 +138,19 @@ corpus = [id2word.doc2bow(text) for text in processed_docs]
 lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
 topics = lda_model.print_topics(num_words=10)
 
+import matplotlib.pyplot as plt
+
+labels = ['Positive', 'Negative', 'Neutral']
+sizes = [numPositive, numNegative, numNeutral]
+colors = ['green', 'red', 'gray']
+
+plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
+plt.axis('equal')
+plt.title("Crypto Twitter Sentiment Breakdown")
+plt.show()
+
+
+
 
 def displayPage():
     homepage = ("The top posts about crypto this week were from the following accounts" 
@@ -124,43 +161,42 @@ def entityCount(file):
     with open(file,"r") as tweets:
         entities = []
         recurringEntities = []
-        
+       
         for tweet in tweets: 
             doc = nlp(tweet) 
         
-        for ent in doc.ents:
-            if ent.text == "#":
-                continue 
-            # elif ent.text.isdigit:
-            #     continue
-            else :
-                entities.append(ent.text)
-                recurringEntities.append(ent.text)
+            for ent in doc.ents:
+                if ent.text == "#":
+                    continue 
+                # elif ent.text.isdigit:
+                #     continue  
+                isCountry = False
+                isCoin = False
+                for country, aliases in country_abbreviations.items():
+                    for alias in aliases: 
+                        if ent.text in alias.lower():
+                            entities.append(country.lower())
+                            
+                            isCountry = True
 
-        returnThis = []
-        
-        for ent in entities:
-            entCount = 0
-        
-            for ent2 in entities: 
-                
-                if not ent or not ent2 in recurringEntities:
-                    if ent == ent2: 
-                        entCount+=1
-                
-                entities.remove(ent)
+                for name, ticket in crypto_dict.items():
+                    if ent.text in ticket.lower():
+                        entities.append(name.lower())
+                        
+                        isCoin = True
 
-            if entCount >= 2: 
-                recurringEntities.append(ent)
-                returnThis.append({"entity": ent, "appears": entCount})
-                
-
+                if isCoin == False and isCountry == False: 
+                    
+                    entities.append(ent.text.lower())
+                    recurringEntities.append(ent.text.lower())
+        returnThis = Counter(entities)
     
     return returnThis
 
 
 
-print(entityCount("positiveTweets.txt"))
+
+
 
         
 
