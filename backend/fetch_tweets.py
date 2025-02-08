@@ -1,23 +1,17 @@
 import requests
 import json
-#url = "https://apis.datura.ai/twitter"
 
-#payload = {
-    #"query": "crypto",
-    #"sort": "Top",
-    #"lang": "en",
-   #  "min_likes": 200,
- #           }
-#headers = {
- #   "Authorization": "REMOVED",
-  #  "Content-Type": "application/json"
-#
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
 
 payloads = [{"prompt": "arguments in crypto"},
             {"prompt": "crypto good"},
             {"prompt": "crypto bad"},
-            {"prompt": "future of crypto"}]
+            {"prompt": "future of crypto"},
+            {"prompt": "crypto"},
+            {"prompt": "pump and dump" },
+            {"prompt": "rug pull"}
+            
+            ]
 
 headers = {
     "Authorization": "REMOVED",
@@ -26,7 +20,7 @@ headers = {
 
 # rawData = (requests.request("POST", url, json={"prompt": "crypto"}, headers=headers)).text
 dictList = []
-with open("tweets.json","w+") as file1, open("tweetIds.txt","w+") as file2:
+with open("tweets.json","a") as file1, open("tweetIds.txt","a") as file2:
     for payload in payloads: 
         response = requests.request("POST", url, json=payload, headers=headers)
         rawData = response.text  
