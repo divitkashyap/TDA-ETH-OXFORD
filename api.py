@@ -17,16 +17,18 @@ response = requests.request("POST", url, json=payload, headers=headers)
 
 rawData =response.text
 data = json.loads(rawData)
-with open("tweets.txt","a+") as file1, open("ids.txt","a+") as file2:
+with open("tweets.json","a+") as file1, open("ids.txt","w+") as file2:
     ids = file2.read()
     for tweet in data:
         if (tweet["id"] not in ids):
-            file1.write("Handle: "+ tweet["user"]["username"]+"\n")
-            file1.write("Followers: %d" %tweet["user"]["followers_count"]+"\n")
-            file1.write("Likes: %d" %tweet["like_count"]+"\n")
-            file1.write("Retweets: %d" %tweet["retweet_count"]+"\n")
-            file1.write("Tweet: " + tweet["text"]+"\n"+"\n")
-            file1.write("Date Posted: "+ tweet["created_at"])
+            reformatedTweet = {"Handle": tweet["user"]["username"], 
+                    "Followers":tweet["user"]["followers_count"],
+                    "Likes":tweet["like_count"],
+                     "Retweets": tweet["retweet_count"],
+                     "Tweet": tweet["text"],
+                     "Date Posted": tweet["created_at"]
+                     }
+            json.dump(reformatedTweet,file1,indent =1 )
             file2.write(tweet["id"]+"\n")
         else:
             print("Already have tweet\n")
