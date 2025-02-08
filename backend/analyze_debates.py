@@ -70,9 +70,8 @@ influentialTweets = []
 negativeTweets = []
 positiveTweets = []
 neutralTweets = []
-entities = []
 
-with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
+with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
    
     for tweet in tweets:
@@ -95,32 +94,22 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
         tagged = pos_tag(tokens)
         entityRec = ne_chunk(tagged)
 
-        file2.write(f"Tweet: {text} → Sentiment: {get_sentiment(text)}\n\n")
-        
-        doc = nlp(text) 
-
 with open('negativeTweets.txt', 'w') as negativeFile:
     for tweet in negativeTweets:
         negativeFile.write(tweet)
 
 with open('positiveTweets.txt', 'w') as positiveFile:
-    for tweet in positiveFile:
+    for tweet in positiveTweets:
         positiveFile.write(tweet)
 
 with open('neutralTweets.txt', 'w') as neutralFile:
-    for tweet in neutralFile:
+    for tweet in neutralTweets:
         neutralFile.write(tweet)
-
-
-    for ent in doc.ents:
-        entities.append(ent.text.lower())
         
                 
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
-
-#print(corpus)
 
 lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
 topics = lda_model.print_topics(num_words=10)
@@ -131,24 +120,39 @@ def displayPage():
       + ", ".join([tweet["Handle"] for tweet in influentialTweets]))
     return homepage
 
-def entityCount():
-    recurringEntities = []
-    returnThis = []
-    count = []
-    for ent in entities:
-        entCount = 0
+def entityCount(file):
+    with open(file,"r") as tweets:
+        entities = []
+        recurringEntities = []
         
-        for ent2 in entities: 
-            
-            if not ent or not ent2 in recurringEntities:
-                if ent == ent2: 
-                    entCount+=1
+        for tweet in tweets: 
+            doc = nlp(tweet) 
+        
+        for ent in doc.ents:
+            if ent.text == "#":
+                continue 
+            elif ent.text.isdigit:
+                continue
+            else :
+                entities.append({"entity": ent.text, "count": 1})
+                recurringEntities.append(ent.text)
 
-        if entCount >= 2: 
-            recurringEntities.append(ent)
-            count.append(entCount)
-            returnThis.append({"entity": ent, "appears": entCount})
-            entities.remove(ent)
+        returnThis = []
+        
+        for ent in entities:
+            entCount = 0
+            
+            for ent2 in entities: 
+                
+                if not ent or not ent2 in recurringEntities:
+                    if ent == ent2: 
+                        entCount+=1
+
+            if entCount >= 2: 
+                recurringEntities.append(ent)
+                count.append(entCount)
+                returnThis.append({"entity": ent, "appears": entCount})
+                entities.remove(ent)
 
     
     return returnThis
