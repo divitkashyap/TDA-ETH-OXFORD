@@ -48,13 +48,12 @@ def get_sentiment(text):
         return "Negative 😡"
     else:
         return "Neutral 😐"
-    
-
 
 processed_docs = []
 influentialTweets = []
 negativeTweets = []
 positiveTweets = []
+neutralTweets = []
 with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2: 
     tweets = json.load(file1)
    
@@ -66,10 +65,11 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
-        if(get_sentiment(text)) == "Positive 😊":
+        else if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
-
+        else:
+            neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+        
         tokens = word_tokenize(text.lower())
         tokens = [word for word in tokens if word.isalnum()]  
         tokens = [word for word in tokens if word not in stop_words] 
@@ -81,8 +81,19 @@ with open("tweets.json","r") as file1, open("sentiment.json","w+") as file2:
         
         # for ent in doc.ents:
         #     print(f"Entity: {ent.text}, Label: {ent.label_}")
-        
-                
+
+with open('negativeTweets.txt', 'w') as negativeFile:
+    for tweet in negativeTweets:
+        negativeFile.write(tweet)
+
+with open('positiveTweets.txt', 'w') as positiveFile:
+    for tweet in positiveFile:
+        positiveFile.write(tweet)
+
+with open('neutralTweets.txt', 'w') as negativeFile:
+    for tweet in neutralFile:
+        neutralFile.write(tweet)
+
 id2word = corpora.Dictionary(processed_docs)
 corpus = [id2word.doc2bow(text) for text in processed_docs]
 
