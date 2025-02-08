@@ -10,7 +10,10 @@ export const CTweep = styled.div`
     font-family: 'Newake';
     font-size: 5rem;
     color: white;
-`
+    text-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5), 
+                 0px 0px 10px rgba(255, 255, 255, 0.3);
+`;
+
 
 export const BodyWrapper = styled.div`
     position: absolute;
@@ -28,7 +31,7 @@ export const PunchWrap = styled.div`
 
 export const Desc = styled.div`
     font-family: 'Madeleina Sans';
-    font-size: 1.5rem;`
+    font-size: 1.65rem;`
 
 export const Logo = styled.img`
     position: absolute;
@@ -45,26 +48,79 @@ margin-top: 1rem;
   gap: 1rem;
 `;
 
-export const SongCard = styled.div`
-  background-color: ${props => props.theme.cardBg};
-  background-color:rgb(127, 143, 189); 
-  border-radius: 15px;
-  width: 350px;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-  color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 0 12px rgba(200, 150, 220, 0.6);
+export const Footer = styled.footer`
+font-family: 'Madeleina Sans';
+font-size: 1.8rem;
   text-align: center;
-  height: 210px;
-  
-  
-  &:hover {
-    transform: scale(1.05);
-  }
+  margin-top: 40rem;
+  margin-bottom: 0;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 10px;
+`;
 
-  @media (max-width:1160px) {
-    
+export const TeamList = styled.div`
+    font-family: 'Madeleina Sans';
+    font-size: 1.6rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  /* margin-top: 1rem; */
+`;
+
+export const TeamMember = styled.div`
+    font-family: 'Abigate Desgo';
+  font-size: 1.2rem;
+  a {
+    color: #00bfff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
 
+export const SongCard = styled.div`
+    font-size: 1rem;
+    background-color: rgb(127, 143, 189); 
+    border-radius: 15px;
+    width: 350px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 5px 22px rgba(150, 160, 174, 0.6);
+    text-align: center;
+    height: 150px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    word-wrap: break-word;
+
+    h1 {
+        font-size: 1.2rem; /* Adjust tweet text size */
+        font-weight: bold;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit to 3 lines */
+        -webkit-box-orient: vertical;
+    }
+
+    h3 {
+        font-size: 0.9rem;
+        margin-top: auto;
+        opacity: 0.9;
+    }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 1160px) {
+    width: 300px;
+  }
+`;
