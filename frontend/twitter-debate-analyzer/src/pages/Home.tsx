@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { CTweep, BodyWrapper, PunchWrap, Desc, BigWrapper, Logo, SongCard, CardContainer, Footer, TeamList, TeamMember } from "../styles/Home.modules";
+import { CTweep, BodyWrapper, PunchWrap, Desc, BigWrapper, Logo, SongCard, CardContainer, Footer, TeamList, TeamMember, Summarian } from "../styles/Home.modules";
 import rugpullcoin42 from "../assets/rugpullcoin42.webp";
 import BgAnimation from "./BgAnimation";
+
 
 type Tweet = {
   Handle: string;
@@ -16,6 +17,28 @@ type Tweet = {
 const Home: React.FC = () => {
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState<string>("");
+  const [plotUrls, setPlotUrls] = useState<{ plot1: string; plot2: string }>({ plot1: "", plot2: "" });
+
+  useEffect(() => {
+    // Fetch summary
+    axios.get("http://127.0.0.1:8000/summary")
+      .then((response) => {
+        setSummary(response.data.summary);
+      })
+      .catch((error) => {
+        console.error("Error fetching summary:", error);
+      });
+  
+    // Set plot URLs directly (static paths)
+    setPlotUrls({
+      plot1: "http://127.0.0.1:8000/static/plot1.png",
+      plot2: "http://127.0.0.1:8000/static/plot2.png",
+    });
+  
+  }, []);
+  
+
 
   useEffect(() => {
     axios.get("http://127.0.0.1:8000/tweets")
@@ -50,17 +73,59 @@ const Home: React.FC = () => {
           </Desc>
 
           {loading ? (
-            <p>Loading tweets...</p>
-          ) : (
-            <CardContainer>
-              {tweets.map((tweet, index) => (
-                <SongCard key={index}>
-                  <h1>{tweet.Tweet.length > 80 ? tweet.Tweet.slice(0, 80) + "..." : tweet.Tweet}</h1>
-                  <h3>@{tweet.Handle} | ❤️ {tweet.Likes} | 🔄 {tweet.Retweets}</h3>
-                </SongCard>
-              ))}
-            </CardContainer>
-          )}
+  <p>Loading tweets...</p>
+) : (
+  <>
+    <CardContainer>
+      {tweets.map((tweet, index) => (
+        <SongCard key={index}>
+          <h1>{tweet.Tweet.length > 80 ? tweet.Tweet.slice(0, 80) + "..." : tweet.Tweet}</h1>
+          <h3>@{tweet.Handle} | ❤️ {tweet.Likes} | 🔄 {tweet.Retweets}</h3>
+        </SongCard>
+      ))}
+    </CardContainer>
+    
+    <Summarian style={{ marginBottom: "50px" }}> {/* Ensure space for About Us */}
+  <div style={{ marginTop: "20px", padding: "20px", backgroundColor: "rgba(255, 255, 255, 0.1)", borderRadius: "10px", color: "white" }}>
+    <h2>Trending Crypto Summary</h2>
+    <p>{summary || "Loading summary..."}</p>
+  </div>
+
+  <div style={{ marginTop: "20px", textAlign: "center" }}>
+    <h2>Crypto Twitter Sentiment Breakdown</h2>
+    {plotUrls.plot1 && (
+      <img 
+        src={plotUrls.plot1} 
+        alt="Sentiment Breakdown" 
+        style={{
+          width: "60%", 
+          maxWidth: "500px", 
+          height: "auto", 
+          borderRadius: "10px", 
+          padding: "10px"
+        }} 
+      />
+    )}
+    {plotUrls.plot2 && (
+      <img 
+        src={plotUrls.plot2} 
+        alt="Likes Breakdown" 
+        style={{
+          width: "60%", 
+          maxWidth: "500px", 
+          height: "auto", 
+          borderRadius: "10px", 
+          padding: "10px",
+          marginTop: "10px"
+        }} 
+      />
+    )}
+  </div>
+
+      </Summarian>
+      </>
+    )}
+
         </BodyWrapper>
       </BigWrapper>
       <AboutUs />

@@ -99,6 +99,34 @@ def get_tweets():
             return {"tweets": json.load(file)}
     except FileNotFoundError:
         return {"tweets": []}  
+    
+import os
+from fastapi.staticfiles import StaticFiles
+
+# Get the absolute path of the backend directory
+backend_path = os.path.abspath(os.path.dirname(__file__))
+
+# Mount the static folder
+app.mount("/static", StaticFiles(directory=backend_path), name="static")
+
+# ✅ API Endpoint to Fetch Summary
+@app.get("/summary")
+def get_summary():
+    try:
+        with open("summary.txt", "r") as file:
+            summary = file.read().strip()
+        return {"summary": summary}
+    except FileNotFoundError:
+        return {"summary": "No summary available yet."}
+
+# ✅ API Endpoint to Fetch Plot URLs
+@app.get("/plots")
+def get_plots():
+    return {
+        "plot1": "/static/plot1.png",
+        "plot2": "/static/plot2.png"
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

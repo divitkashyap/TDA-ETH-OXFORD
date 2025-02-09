@@ -1,5 +1,16 @@
 import styled from "styled-components";
 
+export const Summarian = styled.div`
+    font-family: 'Madeleina Sans';
+    font-size: 1.6rem;
+    background: rgba(255, 255, 255, 0.1); /* Match Footer */
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-top: 2rem;
+`;
+
 export const GradientBG = styled.div`
   width: 100vw;
   height: 100vh;
@@ -101,7 +112,7 @@ export const Footer = styled.footer`
 font-family: 'Madeleina Sans';
 font-size: 1.8rem;
   text-align: center;
-  margin-top: 40rem;
+  margin-top: 99rem;
   margin-bottom: 0;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
@@ -173,3 +184,4 @@ export const SongCard = styled.div`
     width: 300px;
   }
 `;
+
