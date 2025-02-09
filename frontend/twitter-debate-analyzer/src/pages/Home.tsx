@@ -4,7 +4,6 @@ import { CTweep, BodyWrapper, PunchWrap, Desc, BigWrapper, Logo, SongCard, CardC
 import rugpullcoin42 from "../assets/rugpullcoin42.webp";
 import BgAnimation from "./BgAnimation";
 
-
 type Tweet = {
   Handle: string;
   Followers: number;
@@ -15,7 +14,8 @@ type Tweet = {
 };
 
 const Home: React.FC = () => {
-  const [tweets, setTweets] = useState<Tweet[]>([]);
+  const [influentialTweets, setInfluentialTweets] = useState<Tweet[]>([]);
+  const [normalTweets, setNormalTweets] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState<string>("");
   const [plotUrls, setPlotUrls] = useState<{ plot1: string; plot2: string }>({ plot1: "", plot2: "" });
@@ -23,37 +23,40 @@ const Home: React.FC = () => {
   useEffect(() => {
     // Fetch summary
     axios.get("http://127.0.0.1:8000/summary")
-      .then((response) => {
-        setSummary(response.data.summary);
-      })
-      .catch((error) => {
-        console.error("Error fetching summary:", error);
-      });
-  
-    // Set plot URLs directly (static paths)
+      .then((response) => setSummary(response.data.summary))
+      .catch((error) => console.error("Error fetching summary:", error));
+
+    // Set static plot URLs
     setPlotUrls({
       plot1: "http://127.0.0.1:8000/static/plot1.png",
       plot2: "http://127.0.0.1:8000/static/plot2.png",
     });
-  
-  }, []);
-  
+
+// Fetch influential tweets
+axios.get("http://127.0.0.1:8000/influential")
+  .then((response) => {
+    if (Array.isArray(response.data.important)) {
+      setInfluentialTweets(response.data.important.slice(0, 4));
+    } else {
+      console.error("Unexpected format for influential tweets:", response.data.important);
+    }
+  })
+  .catch((error) => console.error("Error fetching influential tweets:", error));
 
 
-  useEffect(() => {
+    // Fetch normal tweets
     axios.get("http://127.0.0.1:8000/tweets")
       .then((response) => {
-        console.log("Fetched tweets:", response.data.tweets);
         const sortedTweets = response.data.tweets
-          .sort((a: Tweet, b: Tweet) => (b.Likes + b.Retweets) - (a.Likes + a.Retweets))
-          .slice(0, 4);
-        setTweets(sortedTweets);
+          .sort((a: Tweet, b: Tweet) => (b.Likes + b.Retweets) - (a.Likes + a.Retweets));
+        setNormalTweets(sortedTweets);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching tweets:", error);
         setLoading(false);
       });
+
   }, []);
 
   return (
@@ -73,59 +76,76 @@ const Home: React.FC = () => {
           </Desc>
 
           {loading ? (
-  <p>Loading tweets...</p>
-) : (
-  <>
-    <CardContainer>
-      {tweets.map((tweet, index) => (
-        <SongCard key={index}>
-          <h1>{tweet.Tweet.length > 80 ? tweet.Tweet.slice(0, 80) + "..." : tweet.Tweet}</h1>
-          <h3>@{tweet.Handle} | ❤️ {tweet.Likes} | 🔄 {tweet.Retweets}</h3>
-        </SongCard>
-      ))}
-    </CardContainer>
-    
-    <Summarian style={{ marginBottom: "50px" }}> {/* Ensure space for About Us */}
-  <div style={{ marginTop: "20px", padding: "20px", backgroundColor: "rgba(255, 255, 255, 0.1)", borderRadius: "10px", color: "white" }}>
-    <h2>Trending Crypto Summary</h2>
-    <p>{summary || "Loading summary..."}</p>
-  </div>
+            <p>Loading tweets...</p>
+          ) : (
+            <>
+              <h2 style={{ textAlign: "center", color: "white" }}>🔥 Influential Tweets</h2>
+              <CardContainer>
+                {influentialTweets.map((tweet, index) => (
+                  <SongCard key={index}>
+                    <h1>{tweet.Tweet}</h1>
+                    <h3>@{tweet.Handle} | ❤️ {tweet.Likes} | 🔄 {tweet.Retweets}</h3>
+                  </SongCard>
+                ))}
+              </CardContainer>
 
-  <div style={{ marginTop: "20px", textAlign: "center" }}>
-    <h2>Crypto Twitter Sentiment Breakdown</h2>
-    {plotUrls.plot1 && (
-      <img 
-        src={plotUrls.plot1} 
-        alt="Sentiment Breakdown" 
-        style={{
-          width: "60%", 
-          maxWidth: "500px", 
-          height: "auto", 
-          borderRadius: "10px", 
-          padding: "10px"
-        }} 
-      />
-    )}
-    {plotUrls.plot2 && (
-      <img 
-        src={plotUrls.plot2} 
-        alt="Likes Breakdown" 
-        style={{
-          width: "60%", 
-          maxWidth: "500px", 
-          height: "auto", 
-          borderRadius: "10px", 
-          padding: "10px",
-          marginTop: "10px"
-        }} 
-      />
-    )}
-  </div>
+              {/* Summary Section */}
+              <Summarian>
+                <div style={{ marginTop: "20px", padding: "20px", backgroundColor: "rgba(255, 255, 255, 0.1)", borderRadius: "10px", color: "white" }}>
+                  <h2>Trending Crypto Summary</h2>
+                  <p>{summary || "Loading summary..."}</p>
+                </div>
 
-      </Summarian>
-      </>
-    )}
+                {/* Sentiment Plots */}
+                <div style={{ marginTop: "20px", textAlign: "center" }}>
+                  <h2>Crypto Twitter Sentiment Breakdown</h2>
+                  {plotUrls.plot1 && (
+                    <img
+                      src={plotUrls.plot1}
+                      alt="Sentiment Breakdown"
+                      style={{
+                        width: "60%",
+                        maxWidth: "500px",
+                        height: "auto",
+                        borderRadius: "10px",
+                        padding: "10px"
+                      }}
+                    />
+                  )}
+                  {plotUrls.plot2 && (
+                    <img
+                      src={plotUrls.plot2}
+                      alt="Likes Breakdown"
+                      style={{
+                        width: "60%",
+                        maxWidth: "500px",
+                        height: "auto",
+                        borderRadius: "10px",
+                        padding: "10px",
+                        marginTop: "10px"
+                      }}
+                    />
+                  )}
+                </div>
+              </Summarian>
 
+              {/* Normal Tweets After Summary */}
+              <h2 style={{ textAlign: "center", color: "white", marginTop: "2rem" }}>💬 Other Crypto Tweets</h2>
+              <CardContainer>
+  {normalTweets.length > 0 ? (
+    normalTweets.map((tweet, index) => (
+      <SongCard key={index}>
+        <h1>{tweet.Tweet}</h1>
+        <h3>@{tweet.Handle} | ❤️ {tweet.Likes} | 🔄 {tweet.Retweets}</h3>
+      </SongCard>
+    ))
+  ) : (
+    <p style={{ color: "white", textAlign: "center" }}>No regular tweets available.</p>
+  )}
+</CardContainer>
+
+            </>
+          )}
         </BodyWrapper>
       </BigWrapper>
       <AboutUs />

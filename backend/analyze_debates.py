@@ -115,7 +115,12 @@ with open("tweets.json","r") as file1:
 
         
         if tweet["Likes"] > 5000:
+            print("adding inners\n")
             influentialTweets.append(tweet)
+        
+        if tweet["Followers"] > 10000:
+            influentialTweets.append(tweet)
+
        
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
@@ -181,10 +186,9 @@ plt.close()
 
 
 def displayPage():
-    with open("influential.txt","w") as inners:
-        for tweet in influentialTweets:
-            inners.write[tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n"]     
-    inners.close()
+   # Update displayPage() to save JSON instead of text
+    with open("influential.json", "w") as file:
+        json.dump(influentialTweets, file, indent=4)
 
 
 def entityCount(file):

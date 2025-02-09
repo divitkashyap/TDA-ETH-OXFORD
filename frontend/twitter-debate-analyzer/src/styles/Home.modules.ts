@@ -61,8 +61,13 @@ export const GradientBG = styled.div`
 
 
 export const BigWrapper = styled.div`
-position: relative;
-`
+  display: flex;
+  flex-direction: column;  /* ✅ Stack elements top to bottom */
+  align-items: center;  /* ✅ Keep everything centered */
+  justify-content: center;
+  width: 100%;
+`;
+
 export const CTweep = styled.div`
     position: absolute;
     top: 0px;
@@ -102,22 +107,28 @@ export const Logo = styled.img`
 `;
 
 export const CardContainer = styled.div`
-margin-top: 1rem;
+  margin-top: 1rem;
   display: flex;
+  flex-wrap: wrap;  /* ✅ Allow wrapping to prevent squishing */
   justify-content: center;
   gap: 1rem;
+  max-width: 90%;  /* ✅ Give the container more space */
+  margin-left: auto;
+  margin-right: auto;
 `;
 
+
 export const Footer = styled.footer`
-font-family: 'Madeleina Sans';
-font-size: 1.8rem;
+  font-family: 'Madeleina Sans';
+  font-size: 1.8rem;
   text-align: center;
-  margin-top: 99rem;
-  margin-bottom: 0;
+  margin-top: 135%;  /* ✅ Adjust margin so it's always close */
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border-radius: 10px;
+  position: relative;  /* ✅ Ensure it's positioned naturally */
+  width: 100%;
 `;
 
 export const TeamList = styled.div`
@@ -143,45 +154,45 @@ export const TeamMember = styled.div`
 
 
 export const SongCard = styled.div`
-    font-size: 1rem;
-    background-color: rgb(127, 143, 189); 
-    border-radius: 15px;
-    width: 350px;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-    color: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 5px 22px rgba(150, 160, 174, 0.6);
-    text-align: center;
-    height: 150px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  font-size: 1rem;
+  background-color: rgb(127, 143, 189); 
+  border-radius: 15px;
+  width: 280px;  /* 🔹 Increased width */
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0 5px 22px rgba(150, 160, 174, 0.6);
+  text-align: center;
+  height: auto;  /* 🔹 Adjust height dynamically */
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  word-wrap: break-word;
+
+  h1 {
+    font-size: 1rem; /* Adjusted for better fit */
+    font-weight: bold;
+    text-overflow: ellipsis;
     overflow: hidden;
-    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
 
-    h1 {
-        font-size: 1.2rem; /* Adjust tweet text size */
-        font-weight: bold;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 3; /* Limit to 3 lines */
-        -webkit-box-orient: vertical;
-    }
-
-    h3 {
-        font-size: 0.9rem;
-        margin-top: auto;
-        opacity: 0.9;
-    }
+  h3 {
+    font-size: 0.9rem;
+    margin-top: auto;
+    opacity: 0.9;
+  }
 
   &:hover {
     transform: scale(1.05);
   }
 
   @media (max-width: 1160px) {
-    width: 300px;
+    width: 250px; /* 🔹 Adjusted for responsiveness */
   }
 `;
+
 

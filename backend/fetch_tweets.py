@@ -24,12 +24,8 @@ payloads = [
     {"prompt": "future of crypto"},
     {"prompt": "crypto"},
     {"prompt": "pump and dump"},
-    {"prompt": "rugpull"},
     {"prompt": "blockchain"},
-    {"prompt": "to the moon"},
     {"prompt": "mining"},
-    {"prompt": "staking"},
-    {"prompt": "DAO"},
     {"prompt": "defi"},
     {"prompt": "decentralized finance"},
     {"prompt": "lower transaction fees"}
@@ -60,6 +56,7 @@ async def process_payload(session, payload, file2, existing_ids, dictList):
                 "Date Posted": tweet["created_at"]
             }
             new_tweets.append(reformatted_tweet)
+            print(reformatted_tweet)
             file2.write(tweet["id"] + "\n")
     
     return new_tweets
@@ -95,8 +92,8 @@ async def startup_event():
 @app.get("/tweets")
 def get_tweets():
     try:
-        with open("tweets.json", "r", encoding="utf-8") as file:
-            return {"tweets": json.load(file)}
+        with open("tweets.json", "r", encoding="utf-8") as file1:
+            return {"tweets": json.load(file1)}
     except FileNotFoundError:
         return {"tweets": []}  
     
@@ -126,6 +123,16 @@ def get_plots():
         "plot1": "/static/plot1.png",
         "plot2": "/static/plot2.png"
     }
+
+@app.get("/influential")
+def get_influential():
+    try:
+        with open("influential.json", "r") as file:
+            influential_tweets = json.load(file)  # ✅ Read JSON properly
+        return {"important": influential_tweets}  # ✅ Return JSON list properly
+    except FileNotFoundError:
+        return {"important": []}  # Return an empty list if no data is available
+
 
 
 if __name__ == "__main__":
