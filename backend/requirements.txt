@@ -3,7 +3,6 @@ fastapi==0.115.8
 nltk==3.9.1
 numpy>=1.24.0
 pandas>=2.0.0
-tensorflow==2.15.0  # Latest stable version
 tweepy==4.15.0
 vaderSentiment==3.3.2
 
