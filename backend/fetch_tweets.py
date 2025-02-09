@@ -1,8 +1,10 @@
 import requests
 import json
+import asyncio
+import aiohttp
 from fastapi import FastAPI
+import analyze_debates  
 from fastapi.middleware.cors import CORSMiddleware
-
 
 app = FastAPI()  
 
@@ -37,45 +39,60 @@ payloads = [
 ]
 
 headers = {
-    "Authorization": "dt_$LSO2gvfJtB6UENHrgs-SS1w0zfSKmAr1gfkbBRmTkIg",
+    "Authorization": "REMOVED",  # ❗ Replace with your API key
     "Content-Type": "application/json"
 }
 
-def fetch_tweets():
-    dict_list = []
-    with open("tweets.json", "w") as file1, open("tweetIds.txt", "r+") as file2:
-        for payload in payloads:
-            response = requests.post(url, json=payload, headers=headers)
-             
-            data = response.json()
+async def fetch_tweets(session, payload):
+    async with session.post(url, json=payload, headers=headers) as response:
+        return await response.text()
 
-            ids = file2.read()
-            file2.seek(0,2)
+async def process_payload(session, payload, file2, existing_ids, dictList):
+    raw_data = await fetch_tweets(session, payload)
+    data = json.loads(raw_data)
+    
+    new_tweets = []
+    for tweet in data.get("miner_tweets", []):  # ✅ Use `.get()` to avoid KeyError
+        if tweet["id"] not in existing_ids and tweet not in dictList:
+            reformatted_tweet = {
+                "Handle": tweet["user"]["username"],
+                "Followers": tweet["user"]["followers_count"],
+                "Likes": tweet["like_count"],
+                "Retweets": tweet["retweet_count"],
+                "Tweet": tweet["text"],
+                "Date Posted": tweet["created_at"]
+            }
+            new_tweets.append(reformatted_tweet)
+            file2.write(tweet["id"] + "\n")
+    
+    return new_tweets
 
-            for tweet in data.get("miner_tweets", []): 
-                if tweet["id"] not in ids and tweet not in dict_list:
-                    reformatted_tweet = {
-                        "Handle": tweet["user"]["username"],
-                        "Followers": tweet["user"]["followers_count"],
-                        "Likes": tweet["like_count"],
-                        "Retweets": tweet["retweet_count"],
-                        "Tweet": tweet["text"],
-                        "Date Posted": tweet["created_at"],
-                    }
-                    dict_list.append(reformatted_tweet)
-                    file2.write(tweet["id"] + "\n")
-                else:
-                    print("Already have tweet\n")
+async def main():
+    dictList = []
+    
+    try:
+        with open("tweetIds.txt", "r") as file2:
+            existing_ids = set(file2.read().splitlines())
+    except FileNotFoundError:
+        existing_ids = set()
+    
+    async with aiohttp.ClientSession() as session:
+        with open("tweets.json", "w") as file1, open("tweetIds.txt", "a") as file2:
+            tasks = [process_payload(session, payload, file2, existing_ids, dictList) for payload in payloads]
+            results = await asyncio.gather(*tasks)
+            
+            for new_tweets in results:
+                dictList.extend(new_tweets)
+            
+            json.dump(dictList, file1)
 
-
-        json.dump(dict_list, file1, indent=4)
-
-@app.on_event("startup")
-async def startup_event():
-    fetch_tweets()
-    await asyncio.to_thread(analyze_tweets)  # ✅ Run `analyze_tweets.py` in a non-blocking way
+    analyze_debates.run_analysis()  # ✅ Run analysis after fetching tweets
     print("✅ Tweets fetched & debates analyzed.")
 
+# ✅ Run automatically when FastAPI starts
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(main())  # ✅ Runs asynchronously
 
 @app.get("/tweets")
 def get_tweets():
@@ -85,10 +102,6 @@ def get_tweets():
     except FileNotFoundError:
         return {"tweets": []}  
 
-
-
 if __name__ == "__main__":
     import uvicorn
-    fetch_tweets() 
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
-

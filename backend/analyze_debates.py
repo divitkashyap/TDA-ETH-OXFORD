@@ -20,6 +20,22 @@ nltk.download('maxent_ne_chunker_tab')
 nltk.download('words')
 stop_words = set(stopwords.words('english'))
 
+def run_analysis():
+    print("🔎 Running debate analysis...")
+
+    # Your analysis logic here
+    with open("tweets.json", "r") as file:
+        tweets = json.load(file)
+    
+    # Process tweets and generate insights
+    analysis_result = {"summary": "This is a sample analysis."}
+
+    # Save analysis to a file
+    with open("analysis.json", "w") as file:
+        json.dump(analysis_result, file, indent=4)
+
+    print("✅ Debate analysis completed.")
+
 crypto_dict = {
     "Bitcoin": "BTC",
     "Ethereum": "ETH",
@@ -81,7 +97,7 @@ negativeLikeCount = 0
 neutralLikeCount = 0
 
 
-with open("backend/tweets.json","r") as file1: 
+with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
     extract_summary(tweets)
     for tweet in tweets:
@@ -200,7 +216,7 @@ def entityCount(file):
 
 # displayPage()
 
-print(entityCount("backend/negativeTweets.txt"))
+print(entityCount("negativeTweets.txt"))
 
 
 
