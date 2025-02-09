@@ -1,91 +1,77 @@
 import requests
 import json
-import uvloop
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()  # ✅ Define the FastAPI app
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (replace with ["http://localhost:5173"] for security)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
 
-payloads = [{"prompt": "arguments in crypto"},
-            {"prompt": "crypto good"},
-            {"prompt": "crypto bad"},
-            {"prompt": "future of crypto"},
-            {"prompt": "crypto"},
-            {"prompt": "pump and dump" },
-            {"prompt": "rug pull"},
-            {"prompt": "rugpull"},
-            {"prompt": "rugged"},
-            {"prompt": "blockchain"},
-            {"prompt": "to the moon"},
-            {"prompt": "mining"},
-            {"prompt": "staking"},
-            {"prompt": "DAO"},
-            {"prompt": "defi"},
-            {"prompt": "decentralized finance"},
-            {"prompt": "apeing"},
-            {"prompt": "lower transaction fees"},
-            ]
+payloads = [
+    {"prompt": "arguments in crypto"},
+    {"prompt": "crypto good"},
+    {"prompt": "crypto bad"},
+    {"prompt": "future of crypto"},
+    {"prompt": "crypto"},
+    {"prompt": "pump and dump"},
+    {"prompt": "rug pull"},
+]
 
 headers = {
     "Authorization": "dt_$LSO2gvfJtB6UENHrgs-SS1w0zfSKmAr1gfkbBRmTkIg",
     "Content-Type": "application/json"
 }
 
-# rawData = (requests.request("POST", url, json={"prompt": "crypto"}, headers=headers)).text
-import asyncio
-import aiohttp
-import json
+def fetch_tweets():
+    dict_list = []
+    with open("tweets.json", "w") as file1, open("tweetIds.txt", "w+") as file2:
+        for payload in payloads:
+            response = requests.post(url, json=payload, headers=headers)
+            data = response.json()
 
-async def fetch_tweets(session, payload):
-    async with session.post(url, json=payload, headers=headers) as response:
-        return await response.text()
+            ids = file2.read()
 
-async def process_payload(session, payload, file2, existing_ids, dictList):
-    raw_data = await fetch_tweets(session, payload)
-    data = json.loads(raw_data)
-    
-    new_tweets = []
-    for tweet in data["miner_tweets"]:
-        if tweet["id"] not in existing_ids and tweet not in dictList:
-            reformated_tweet = {
-                "Handle": tweet["user"]["username"],
-                "Followers": tweet["user"]["followers_count"],
-                "Likes": tweet["like_count"],
-                "Retweets": tweet["retweet_count"],
-                "Tweet": tweet["text"],
-                "Date Posted": tweet["created_at"]
-            }
-            new_tweets.append(reformated_tweet)
-            file2.write(tweet["id"] + "\n")
-        else:
-            continue
-    return new_tweets
+            for tweet in data.get("miner_tweets", []):  # ✅ Prevent KeyError
+                if tweet["id"] not in ids and tweet not in dict_list:
+                    reformatted_tweet = {
+                        "Handle": tweet["user"]["username"],
+                        "Followers": tweet["user"]["followers_count"],
+                        "Likes": tweet["like_count"],
+                        "Retweets": tweet["retweet_count"],
+                        "Tweet": tweet["text"],
+                        "Date Posted": tweet["created_at"],
+                    }
+                    dict_list.append(reformatted_tweet)
+                    file2.write(tweet["id"] + "\n")
+                else:
+                    print("Already have tweet\n")
 
-async def main():
-    dictList = []
-    
-    # Read existing IDs first
-    with open("tweetIds.txt", "r+") as file2:
-        existing_ids = set(file2.read().splitlines())
-    
-    async with aiohttp.ClientSession() as session:
-        with open("tweets.json", "w+") as file1, open("tweetIds.txt", "a") as file2:
-            # Create tasks for all payloads
-            tasks = [
-                process_payload(session, payload, file2, existing_ids, dictList)
-                for payload in payloads
-            ]
-            
-            # Wait for all tasks to complete
-            results = await asyncio.gather(*tasks)
-            
-            # Flatten results and extend dictList
-            for new_tweets in results:
-                dictList.extend(new_tweets)
-            
-            # Write to JSON file
-            json.dump(dictList, file1)
+
+        json.dump(dict_list, file1, indent=4)
+
+
+# ✅ API Route for Frontend
+@app.get("/tweets")
+def get_tweets():
+    try:
+        with open("tweets.json", "r", encoding="utf-8") as file:
+            return {"tweets": json.load(file)}
+    except FileNotFoundError:
+        return {"tweets": []}  # Return empty list if file doesn't exist
 
 
 
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if __name__ == "__main__":
+    import uvicorn
+    fetch_tweets()  # ✅ Fetch tweets before starting API
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
 
-asyncio.run(main())
