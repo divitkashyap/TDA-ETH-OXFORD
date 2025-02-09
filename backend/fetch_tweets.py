@@ -8,10 +8,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins§ (replace with ["http://localhost:5173"] for security)
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"], 
+    allow_headers=["*"],  
 )
 
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
@@ -70,6 +70,12 @@ def fetch_tweets():
 
         json.dump(dict_list, file1, indent=4)
 
+@app.on_event("startup")
+async def startup_event():
+    fetch_tweets()
+    await asyncio.to_thread(analyze_tweets)  # ✅ Run `analyze_tweets.py` in a non-blocking way
+    print("✅ Tweets fetched & debates analyzed.")
+
 
 @app.get("/tweets")
 def get_tweets():
@@ -83,6 +89,6 @@ def get_tweets():
 
 if __name__ == "__main__":
     import uvicorn
-    fetch_tweets()  
+    fetch_tweets() 
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
 
