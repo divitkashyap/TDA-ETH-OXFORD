@@ -3,7 +3,6 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
 #Runtimes very bad, had a concurrent version that was faster but didn't do well with the rest of the repo 
 app = FastAPI()  # ✅ Define the FastAPI app
 
@@ -15,9 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
-
 payloads = [
     {"prompt": "arguments in crypto"},
     {"prompt": "crypto good"},
