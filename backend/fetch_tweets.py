@@ -3,11 +3,13 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
+#Runtimes very bad, had a concurrent version that was faster but didn't do well with the rest of the repo 
 app = FastAPI()  # ✅ Define the FastAPI app
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (replace with ["http://localhost:5173"] for security)
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,7 +25,17 @@ payloads = [
     {"prompt": "future of crypto"},
     {"prompt": "crypto"},
     {"prompt": "pump and dump"},
-    {"prompt": "rug pull"},
+    {"prompt": "rugpull"},
+    {"prompt": "rugged"},
+    {"prompt": "blockchain"},
+    {"prompt": "to the moon"},
+    {"prompt": "mining"},
+    {"prompt": "staking"},
+    {"prompt": "DAO"},
+    {"prompt": "defi"},
+    {"prompt": "decentralized finance"},
+    {"prompt": "apeing"},
+    {"prompt": "lower transaction fees"}
 ]
 
 headers = {
@@ -66,7 +78,7 @@ def get_tweets():
         with open("tweets.json", "r", encoding="utf-8") as file:
             return {"tweets": json.load(file)}
     except FileNotFoundError:
-        return {"tweets": []}  # Return empty list if file doesn't exist
+        return {"tweets": []}  
 
 
 

@@ -142,16 +142,18 @@ colors = ['green', 'red', 'gray']
 plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.axis('equal')
 plt.title("Crypto Twitter Sentiment Breakdown")
+plt.savefig('plot1.png',format = 'png')
+plt.close()
 
 
 labels1 = ['Positive Likes', 'Negative Likes', 'Neutral Likes']
 sizes1 = [positiveLikeCount, negativeLikeCount, neutralLikeCount]
-
-
 plt.pie(sizes1, labels=labels1, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.axis('equal')
 plt.title("What the people are liking")
-plt.show()
+plt.savefig('plot2.png',format = 'png')
+plt.close()
+
 
 
 
