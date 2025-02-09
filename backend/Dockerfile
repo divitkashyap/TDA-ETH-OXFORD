@@ -30,9 +30,9 @@ WORKDIR /app
 
 # Install Python packages
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install playwright && playwright install && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["sh", "-c", "python3 fetch_tweets.py && python3 extract_tweets.py && python3 analyze_debates.py"]
+# Run the FastAPI app using Uvicorn
+CMD ["uvicorn", "fetch_tweets:app", "--reload"]
