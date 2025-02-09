@@ -55,7 +55,7 @@ async def process_payload(session, payload, file2, existing_ids, dictList):
             new_tweets.append(reformated_tweet)
             file2.write(tweet["id"] + "\n")
         else:
-            print("Already have tweet")
+            continue
     return new_tweets
 
 async def main():
