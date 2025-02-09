@@ -8,12 +8,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (replace with ["http://localhost:5173"] for security)
+    allow_origins=["*"],  # Allow all origins§ (replace with ["http://localhost:5173"] for security)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
 
@@ -38,18 +37,20 @@ payloads = [
 ]
 
 headers = {
-    "Authorization": "REMOVED",
+    "Authorization": "dt_$LSO2gvfJtB6UENHrgs-SS1w0zfSKmAr1gfkbBRmTkIg",
     "Content-Type": "application/json"
 }
 
 def fetch_tweets():
     dict_list = []
-    with open("tweets.json", "w") as file1, open("tweetIds.txt", "w+") as file2:
+    with open("tweets.json", "w") as file1, open("tweetIds.txt", "r+") as file2:
         for payload in payloads:
             response = requests.post(url, json=payload, headers=headers)
+             
             data = response.json()
 
             ids = file2.read()
+            file2.seek(0,2)
 
             for tweet in data.get("miner_tweets", []): 
                 if tweet["id"] not in ids and tweet not in dict_list:

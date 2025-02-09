@@ -83,6 +83,7 @@ neutralLikeCount = 0
 
 with open("backend/tweets.json","r") as file1: 
     tweets = json.load(file1)
+    extract_summary(tweets)
     for tweet in tweets:
         text = tweet["Tweet"]
 
