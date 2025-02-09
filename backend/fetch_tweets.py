@@ -55,7 +55,9 @@ def fetch_tweets():
                 else:
                     print("Already have tweet\n")
 
+
         json.dump(dict_list, file1, indent=4)
+
 
 # ✅ API Route for Frontend
 @app.get("/tweets")
@@ -66,7 +68,10 @@ def get_tweets():
     except FileNotFoundError:
         return {"tweets": []}  # Return empty list if file doesn't exist
 
+
+
 if __name__ == "__main__":
     import uvicorn
     fetch_tweets()  # ✅ Fetch tweets before starting API
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
+
