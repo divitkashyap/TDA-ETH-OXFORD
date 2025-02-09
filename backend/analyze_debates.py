@@ -77,6 +77,11 @@ def extract_summary(tweets):
     return " ".join(ranked_sentences[:3])
 
 
+positiveLikeCount = 0
+negativeLikeCount = 0
+neutralLikeCount = 0
+
+
 with open("tweets.json","r") as file1: 
     tweets = json.load(file1)
     print(extract_summary(tweets))
@@ -90,11 +95,15 @@ with open("tweets.json","r") as file1:
         if (get_sentiment(text)) == "Negative 😡":
             negativeTweets.append ("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
             numNegative+=1
+            negativeLikeCount = negativeLikeCount + tweet["Likes"]
+
         if(get_sentiment(text)) == "Positive 😊":
             positiveTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
             numPositive+=1
+            positiveLikeCount = positiveLikeCount + tweet["Likes"]
         else:
             neutralTweets.append("@"+ tweet["Handle"]+ ": "+tweet["Tweet"])
+            neutralLikeCount = neutralLikeCount + tweet["Likes"]
             numNeutral+=1
         
         tokens = word_tokenize(text.lower())
@@ -133,7 +142,18 @@ colors = ['green', 'red', 'gray']
 plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.axis('equal')
 plt.title("Crypto Twitter Sentiment Breakdown")
+
+
+labels1 = ['Positive Likes', 'Negative Likes', 'Neutral Likes']
+sizes1 = [positiveLikeCount, negativeLikeCount, neutralLikeCount]
+
+
+plt.pie(sizes1, labels=labels1, autopct='%1.1f%%', colors=colors, startangle=140)
+plt.axis('equal')
+plt.title("What the people are liking")
 plt.show()
+
+
 
 
 
