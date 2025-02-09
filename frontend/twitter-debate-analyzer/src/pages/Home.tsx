@@ -92,7 +92,7 @@ axios.get("http://127.0.0.1:8000/influential")
               {/* Summary Section */}
               <Summarian>
                 <div style={{ marginTop: "20px", padding: "20px", backgroundColor: "rgba(255, 255, 255, 0.1)", borderRadius: "10px", color: "white" }}>
-                  <h2>Trending Crypto Summary</h2>
+                  <h2 className="basedC">Trending Tweets from Based Accounts</h2>
                   <p>{summary || "Loading summary..."}</p>
                 </div>
 
@@ -148,7 +148,9 @@ axios.get("http://127.0.0.1:8000/influential")
           )}
         </BodyWrapper>
       </BigWrapper>
+
       <AboutUs />
+
     </>
   );
 };

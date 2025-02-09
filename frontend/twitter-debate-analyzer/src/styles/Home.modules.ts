@@ -61,11 +61,18 @@ export const GradientBG = styled.div`
 
 
 export const BigWrapper = styled.div`
-  display: flex;
+ display: flex;
   flex-direction: column;  /* ✅ Stack elements top to bottom */
   align-items: center;  /* ✅ Keep everything centered */
   justify-content: center;
   width: 100%;
+
+
+  .basedC {
+    font-family: 'Newake';
+    font-size: 1.8rem;
+    color: white;
+  }
 `;
 
 export const CTweep = styled.div`
@@ -81,13 +88,15 @@ export const CTweep = styled.div`
 
 
 export const BodyWrapper = styled.div`
-    position: absolute;
-    font-family: 'newake';
+    display: flex;
+    margin-top: 3.5rem;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    top: 120px;
-    left: 0;
-    right: 0;
-    `
+    width: 100%;
+    padding: 2rem 0;
+`;
+
 
 export const PunchWrap = styled.div`
     font-family: 'Newake';
@@ -122,14 +131,14 @@ export const Footer = styled.footer`
   font-family: 'Madeleina Sans';
   font-size: 1.8rem;
   text-align: center;
-  margin-top: 165%;  /* ✅ Adjust margin so it's always close */
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border-radius: 10px;
-  position: relative;  /* ✅ Ensure it's positioned naturally */
   width: 100%;
+  margin-top: auto;  /* ✅ Push footer to bottom */
 `;
+
 
 export const TeamList = styled.div`
     font-family: 'Madeleina Sans';
