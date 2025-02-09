@@ -2,9 +2,59 @@ import requests
 import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from transformers import pipeline
 
 app = FastAPI()  
+
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+
+def summarize_with_bart(tweets, max_length=150, min_length=50):
+    """
+    Summarize tweets using BART model with chunking for long texts
+    """
+    full_text = " ".join([tweet["Tweet"] for tweet in tweets])
+    
+    # BART has 1024 token limit - split into chunks
+    chunk_size = 1000  # Characters (safe margin)
+    chunks = [full_text[i:i+chunk_size] for i in range(0, len(full_text), chunk_size)]
+    
+    summaries = []
+    for chunk in chunks:
+        summary = summarizer(
+            chunk,
+            max_length=max_length,
+            min_length=min_length,
+            do_sample=False,
+            truncation=True
+        )[0]['summary_text']
+        summaries.append(summary)
+    
+    # Combine chunk summaries and summarize final
+    combined = " ".join(summaries)
+    return summarizer(
+        combined,
+        max_length=max_length,
+        min_length=min_length,
+        do_sample=False
+    )[0]['summary_text']
+
+def extract_summary(tweets):
+    # First get most frequent debate topic
+    frequent_words = get_most_frequent_debate_words(tweets)
+    if not frequent_words:
+        return "No clear debate topics identified"
+    
+    main_topic = frequent_words[0][0]
+    
+    # Filter tweets containing main topic
+    topic_tweets = [
+        t for t in tweets 
+        if main_topic.lower() in t["Tweet"].lower()
+    ]
+    
+    # Generate BART summary focused on main topic
+    return f"🔥 Main Debate Topic: {main_topic.upper()}\n" + \
+           summarize_with_bart(topic_tweets)
 
 app.add_middleware(
     CORSMiddleware,
@@ -73,18 +123,19 @@ def fetch_tweets():
 @app.on_event("startup")
 async def startup_event():
     fetch_tweets()
-    await asyncio.to_thread(analyze_tweets)  # ✅ Run `analyze_tweets.py` in a non-blocking way
-    print("✅ Tweets fetched & debates analyzed.")
-
-
+    
 @app.get("/tweets")
 def get_tweets():
     try:
         with open("tweets.json", "r", encoding="utf-8") as file:
-            return {"tweets": json.load(file)}
+            tweets = json.load(file)
+            return {
+                "tweets": tweets,
+                "debate_summary": extract_summary(tweets),
+                "main_topic": get_most_frequent_debate_words(tweets)[0][0] if get_most_frequent_debate_words(tweets) else None
+            }
     except FileNotFoundError:
-        return {"tweets": []}  
-
+        return {"tweets": [], "debate_summary": "No debate data available"}
 
 
 if __name__ == "__main__":
