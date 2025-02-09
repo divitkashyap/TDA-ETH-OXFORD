@@ -6,6 +6,9 @@ pandas>=2.0.0
 tweepy==4.15.0
 vaderSentiment==3.3.2
 uvicorn==0.22.0
+python-multipart==0.0.6
+requests==2.31.0
+# Remove starlette line as FastAPI will handle this dependency
 
 # Web scraping dependencies
 playwright==1.50.0
@@ -18,4 +21,4 @@ textblob==0.19.0
 
 # Utilities
 loguru==0.7.3
-python-dotenv==1.0.0  # Added for environment variable management
+python-dotenv==1.0.0
