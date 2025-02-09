@@ -116,13 +116,16 @@ def get_summary():
     except FileNotFoundError:
         return {"summary": "No summary available yet."}
 
-# ✅ API Endpoint to Fetch Plot URLs
 @app.get("/plots")
 def get_plots():
     return {
         "plot1": "/static/plot1.png",
-        "plot2": "/static/plot2.png"
+        "plot2": "/static/plot2.png",
+        "plot3": "negativeTweets.png",
+        "plot4": "positiveTweets.png",
+        "plot5": "neutralTweets.png"
     }
+
 
 @app.get("/influential")
 def get_influential():

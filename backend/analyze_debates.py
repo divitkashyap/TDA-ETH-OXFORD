@@ -1,4 +1,5 @@
 import nltk 
+import os
 import json
 import spacy 
 from nltk.sentiment import SentimentIntensityAnalyzer
@@ -191,42 +192,70 @@ def displayPage():
         json.dump(influentialTweets, file, indent=4)
 
 
+import os
+import matplotlib.pyplot as plt
+
 def entityCount(file):
-    with open(file,"r") as tweets:
+    with open(file, "r") as tweets:
         entities = []
-        recurringEntities = []
-       
-        for tweet in tweets: 
-            doc = nlp(tweet) 
-        
+        for tweet in tweets:
+            doc = nlp(tweet)
             for ent in doc.ents:
                 if ent.text == "#":
-                    continue 
-                # elif ent.text.isdigit:
-                #     continue  
-                isCountry = False
-                isCoin = False
-                for country, aliases in country_abbreviations.items():
-                    for alias in aliases: 
-                        if ent.text in alias.lower():
-                            entities.append(country.lower())
-                            
-                            isCountry = True
+                    continue  
+                entities.append(ent.text.lower())
 
-                for name, ticket in crypto_dict.items():
-                    if ent.text in ticket.lower():
-                        entities.append(name.lower())
-                        
-                        isCoin = True
+    returnThis = Counter(entities)
 
-                if isCoin == False and isCountry == False: 
-                    
-                    entities.append(ent.text.lower())
-                    recurringEntities.append(ent.text.lower())
-        returnThis = Counter(entities)
+    # ✅ Check if there are entities before saving
+    if not returnThis:
+        print(f"⚠ Warning: No entities found in {file}")
+        return {}
+
+    words, counts = zip(*returnThis.items())
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(words, counts, color='skyblue')
+    plt.title(f"Frequency of Entities in {file}", fontsize=14)
+    plt.xlabel("Entities", fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+
+    # ✅ Remove ".txt" from filename before saving
+    filename_without_ext = os.path.splitext(file)[0]  # Removes .txt
+    output_filename = f"{filename_without_ext}.png"   # Adds .png
+
+    plt.savefig(output_filename, format='png')
+    print(f"✅ Saved plot as {output_filename}")  # Debugging log
     
+    plt.close()
+
     return returnThis
 
+    # ✅ Handle empty dictionary before unpacking
+    if not returnThis:
+        print(f"⚠ Warning: No entities found in {file}")
+        return {}
+
+    words, counts = zip(*returnThis.items())  # ✅ Fix unpacking issue
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(words, counts, color='skyblue')
+    plt.title(f"Frequency of Entities in {file}", fontsize=14)
+    plt.xlabel("Entities", fontsize=12)
+    plt.ylabel("Frequency", fontsize=12)
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    filename_without_ext = os.path.splitext(file)[0]  # ✅ Removes ".txt"
+    output_filename = filename_without_ext + ".png"   # ✅ Appends ".png"
+    
+    plt.savefig(output_filename, format='png')
+    print(f"✅ Saved plot as {output_filename}")  # Debugging log
+    
+    plt.close()
+
+    return returnThis
 # with open("commonWords.txt", "w") as file: 
 #     file.write("Positive words: " + entityCount("positiveTweets.txt"))
 #     file.write("Negative words: " + entityCount("negativeTweets.txt").__str__)
@@ -235,6 +264,9 @@ def entityCount(file):
 # file.close()
 
 displayPage()
+entityCount("positiveTweets.txt")
+entityCount("negativeTweets.txt")
+entityCount("neutralTweets.txt")
 
 
         
