@@ -30,8 +30,7 @@ WORKDIR /app
 
 # Install Python packages
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    playwright install && \
+RUN pip install --upgrade pip && pip install playwright && playwright install && \
     pip install --no-cache-dir -r requirements.txt
 
 COPY . .
