@@ -122,7 +122,7 @@ export const Footer = styled.footer`
   font-family: 'Madeleina Sans';
   font-size: 1.8rem;
   text-align: center;
-  margin-top: 135%;  /* ✅ Adjust margin so it's always close */
+  margin-top: 165%;  /* ✅ Adjust margin so it's always close */
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
   color: white;
