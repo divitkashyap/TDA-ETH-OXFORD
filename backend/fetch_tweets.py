@@ -1,5 +1,6 @@
 import requests
 import json
+import uvloop
 
 url = "https://apis.datura.ai/desearch/ai/search/links/twitter"
 
@@ -83,5 +84,8 @@ async def main():
             # Write to JSON file
             json.dump(dictList, file1)
 
-# Run the async code
+
+
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+
 asyncio.run(main())
