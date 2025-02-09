@@ -84,13 +84,23 @@ def extract_summary(tweets):
     words = nltk.word_tokenize(text.lower())
     word_freq = Counter(words)
 
-   
-    ranked_sentences = sorted(sentences, key=lambda s: sum(word_freq[word] for word in s.split()), reverse=True)
-    
     with open("summary.txt","w") as summies:
+        ranked_sentences = sorted(sentences, key=lambda s: sum(word_freq[word] for word in s.split()), reverse=True)
         summies.write(" ".join(ranked_sentences[:3]))
-    
-
+        # for tweet in tweets:
+        #     if ranked_sentences[0] in tweet["Tweet"]:
+        #         summies.write(tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n")
+        #         break
+        #     elif ranked_sentences[1] in tweet["Tweet"]:
+        #         summies.write(tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n")
+        #         break
+        #     elif ranked_sentences[2] in tweet["Tweet"]:
+        #         summies.write(tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n")
+        #         break
+        #     elif ranked_sentences[3] in tweet["Tweet"]:
+        #         summies.write(tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n")
+        #         break
+        summies.close()
 
 positiveLikeCount = 0
 negativeLikeCount = 0
@@ -170,11 +180,11 @@ plt.savefig('plot2.png',format = 'png')
 plt.close()
 
 
-# def displayPage():
-#     with open("influential.txt","w") as inners:
-#         for tweet in influentialTweets:
-#             inners.write[tweet]     
-#     inners.close()
+def displayPage():
+    with open("influential.txt","w") as inners:
+        for tweet in influentialTweets:
+            inners.write[tweet["Handle"]+ ": "+tweet["Tweet"]+"likes: "+str(tweet["Likes"])+"\n"]     
+    inners.close()
 
 
 def entityCount(file):
@@ -213,11 +223,14 @@ def entityCount(file):
     
     return returnThis
 
+# with open("commonWords.txt", "w") as file: 
+#     file.write("Positive words: " + entityCount("positiveTweets.txt"))
+#     file.write("Negative words: " + entityCount("negativeTweets.txt").__str__)
+#     file.write("Neutral words: " + entityCount("neutralTweets.txt").__str__)
 
-# displayPage()
+# file.close()
 
-print(entityCount("negativeTweets.txt"))
-
+displayPage()
 
 
         

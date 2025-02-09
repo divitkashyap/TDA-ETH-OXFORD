@@ -3,7 +3,6 @@ import json
 import asyncio
 import aiohttp
 from fastapi import FastAPI
-import analyze_debates  
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()  
@@ -26,7 +25,6 @@ payloads = [
     {"prompt": "crypto"},
     {"prompt": "pump and dump"},
     {"prompt": "rugpull"},
-    {"prompt": "rugged"},
     {"prompt": "blockchain"},
     {"prompt": "to the moon"},
     {"prompt": "mining"},
@@ -34,12 +32,11 @@ payloads = [
     {"prompt": "DAO"},
     {"prompt": "defi"},
     {"prompt": "decentralized finance"},
-    {"prompt": "apeing"},
     {"prompt": "lower transaction fees"}
 ]
 
 headers = {
-    "Authorization": "REMOVED",  # ❗ Replace with your API key
+    "Authorization": "dt_$LSO2gvfJtB6UENHrgs-SS1w0zfSKmAr1gfkbBRmTkIg",  # ❗ Replace with your API key
     "Content-Type": "application/json"
 }
 
@@ -86,6 +83,7 @@ async def main():
             
             json.dump(dictList, file1)
 
+    import analyze_debates  
     analyze_debates.run_analysis()  # ✅ Run analysis after fetching tweets
     print("✅ Tweets fetched & debates analyzed.")
 
