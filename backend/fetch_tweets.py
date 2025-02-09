@@ -3,7 +3,8 @@ import json
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()  # ✅ Define the FastAPI app
+
+app = FastAPI()  
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,7 +24,17 @@ payloads = [
     {"prompt": "future of crypto"},
     {"prompt": "crypto"},
     {"prompt": "pump and dump"},
-    {"prompt": "rug pull"},
+    {"prompt": "rugpull"},
+    {"prompt": "rugged"},
+    {"prompt": "blockchain"},
+    {"prompt": "to the moon"},
+    {"prompt": "mining"},
+    {"prompt": "staking"},
+    {"prompt": "DAO"},
+    {"prompt": "defi"},
+    {"prompt": "decentralized finance"},
+    {"prompt": "apeing"},
+    {"prompt": "lower transaction fees"}
 ]
 
 headers = {
@@ -40,7 +51,7 @@ def fetch_tweets():
 
             ids = file2.read()
 
-            for tweet in data.get("miner_tweets", []):  # ✅ Prevent KeyError
+            for tweet in data.get("miner_tweets", []): 
                 if tweet["id"] not in ids and tweet not in dict_list:
                     reformatted_tweet = {
                         "Handle": tweet["user"]["username"],
@@ -59,19 +70,18 @@ def fetch_tweets():
         json.dump(dict_list, file1, indent=4)
 
 
-# ✅ API Route for Frontend
 @app.get("/tweets")
 def get_tweets():
     try:
         with open("tweets.json", "r", encoding="utf-8") as file:
             return {"tweets": json.load(file)}
     except FileNotFoundError:
-        return {"tweets": []}  # Return empty list if file doesn't exist
+        return {"tweets": []}  
 
 
 
 if __name__ == "__main__":
     import uvicorn
-    fetch_tweets()  # ✅ Fetch tweets before starting API
+    fetch_tweets()  
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
 

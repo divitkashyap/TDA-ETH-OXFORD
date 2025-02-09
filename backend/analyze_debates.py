@@ -37,8 +37,6 @@ country_abbreviations = {
 }
 
 
-
-
 sia = SentimentIntensityAnalyzer()
 nlp = spacy.load("en_core_web_sm")
 
@@ -66,15 +64,16 @@ def extract_summary(tweets):
     text = " ".join([tweet["Tweet"] for tweet in tweets])
     sentences = sent_tokenize(text)
     
-    # Count word frequency
+   
     words = nltk.word_tokenize(text.lower())
     word_freq = Counter(words)
 
-    # Score sentences based on word frequency
+   
     ranked_sentences = sorted(sentences, key=lambda s: sum(word_freq[word] for word in s.split()), reverse=True)
     
-    # Return top 3 sentences as summary
-    return " ".join(ranked_sentences[:3])
+    with open("summary.txt","w") as summies:
+        summies.write(" ".join(ranked_sentences[:3]))
+    
 
 
 positiveLikeCount = 0
@@ -82,9 +81,8 @@ negativeLikeCount = 0
 neutralLikeCount = 0
 
 
-with open("tweets.json","r") as file1: 
+with open("backend/tweets.json","r") as file1: 
     tweets = json.load(file1)
-    print(extract_summary(tweets))
     for tweet in tweets:
         text = tweet["Tweet"]
 
@@ -142,26 +140,25 @@ colors = ['green', 'red', 'gray']
 plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.axis('equal')
 plt.title("Crypto Twitter Sentiment Breakdown")
+plt.savefig('plot1.png',format = 'png')
+plt.close()
 
 
 labels1 = ['Positive Likes', 'Negative Likes', 'Neutral Likes']
 sizes1 = [positiveLikeCount, negativeLikeCount, neutralLikeCount]
-
-
 plt.pie(sizes1, labels=labels1, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.axis('equal')
 plt.title("What the people are liking")
-plt.show()
+plt.savefig('plot2.png',format = 'png')
+plt.close()
 
 
+# def displayPage():
+#     with open("influential.txt","w") as inners:
+#         for tweet in influentialTweets:
+#             inners.write[tweet]     
+#     inners.close()
 
-
-
-
-def displayPage():
-    homepage = ("The top posts about crypto this week were from the following accounts" 
-      + ", ".join([tweet["Handle"] for tweet in influentialTweets]))
-    return homepage
 
 def entityCount(file):
     with open(file,"r") as tweets:
@@ -200,9 +197,10 @@ def entityCount(file):
     return returnThis
 
 
+# displayPage()
 
+print(entityCount("backend/negativeTweets.txt"))
 
 
 
         
-
