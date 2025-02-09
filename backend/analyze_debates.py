@@ -4,9 +4,6 @@ import spacy
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import word_tokenize, pos_tag, ne_chunk
 from nltk.tokenize import sent_tokenize
-import gensim
-import gensim.corpora as corpora
-from gensim.models.ldamodel import LdaModel
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
@@ -14,7 +11,13 @@ from collections import Counter
 
 nltk.download("vader_lexicon")
 nltk.download('stopwords')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
 nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('maxent_ne_chunker_tab')
+nltk.download('words')
 stop_words = set(stopwords.words('english'))
 
 crypto_dict = {
@@ -33,25 +36,8 @@ country_abbreviations = {
     "United Kingdom": ["UK", "U.K.", "Britain", "England", "Great Britain"]
 }
 
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
 
-try:
-    nltk.data.find('taggers/averaged_perceptron_tagger')
-except LookupError:
-    nltk.download('averaged_perceptron_tagger')
 
-try:
-    nltk.data.find('chunkers/maxent_ne_chunker')
-except LookupError:
-    nltk.download('maxent_ne_chunker')
-
-try:
-    nltk.data.find('corpora/words')
-except LookupError:
-    nltk.download('words')
 
 sia = SentimentIntensityAnalyzer()
 nlp = spacy.load("en_core_web_sm")
@@ -131,12 +117,12 @@ with open('neutralTweets.txt', 'w') as neutralFile:
         neutralFile.write(tweet)
         
                 
-id2word = corpora.Dictionary(processed_docs)
-corpus = [id2word.doc2bow(text) for text in processed_docs]
+# id2word = corpora.Dictionary(processed_docs)
+# corpus = [id2word.doc2bow(text) for text in processed_docs]
 
 
-lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
-topics = lda_model.print_topics(num_words=10)
+# lda_model = LdaModel(corpus=corpus, id2word=id2word, num_topics=10, passes=10, random_state=42)
+# topics = lda_model.print_topics(num_words=10)
 
 import matplotlib.pyplot as plt
 
