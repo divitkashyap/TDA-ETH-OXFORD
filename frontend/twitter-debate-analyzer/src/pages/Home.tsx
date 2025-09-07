@@ -4,6 +4,8 @@ import { CTweep, BodyWrapper, PunchWrap, Desc, BigWrapper, Logo, SongCard, CardC
 import rugpullcoin42 from "../assets/rugpullcoin42.webp";
 import BgAnimation from "./BgAnimation";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
 type Tweet = {
   Handle: string;
   Followers: number;
@@ -22,18 +24,18 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     // Fetch summary
-    axios.get("http://127.0.0.1:8000/summary")
+    axios.get(`${API_URL}/summary`)
       .then((response) => setSummary(response.data.summary))
       .catch((error) => console.error("Error fetching summary:", error));
 
     // Set static plot URLs
     setPlotUrls({
-      plot1: "http://127.0.0.1:8000/static/plot1.png",
-      plot2: "http://127.0.0.1:8000/static/plot2.png",
+      plot1: `${API_URL}/static/plot1.png`,
+      plot2: `${API_URL}/static/plot2.png`,
     });
 
 // Fetch influential tweets
-axios.get("http://127.0.0.1:8000/influential")
+axios.get(`${API_URL}/influential`)
   .then((response) => {
     if (Array.isArray(response.data.important)) {
       setInfluentialTweets(response.data.important.slice(0, 4));
@@ -45,7 +47,7 @@ axios.get("http://127.0.0.1:8000/influential")
 
 
     // Fetch normal tweets
-    axios.get("http://127.0.0.1:8000/tweets")
+    axios.get(`${API_URL}/tweets`)
       .then((response) => {
         const sortedTweets = response.data.tweets
           .sort((a: Tweet, b: Tweet) => (b.Likes + b.Retweets) - (a.Likes + a.Retweets));

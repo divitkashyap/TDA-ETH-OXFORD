@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 type Tweet = {
   Handle: string;
@@ -14,7 +16,7 @@ const TweetsList = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/tweets")
+    fetch(`${API_URL}/tweets`)
       .then((response) => response.json())
       .then((data) => {
         setTweets(data.tweets);
