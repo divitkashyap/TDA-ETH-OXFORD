@@ -1,6 +1,6 @@
 FROM python:3.12.2
 
-# Install system dependencies for Python and Node.js (including npm and yarn)
+# Install system dependencies for Python
 RUN apt-get update && apt-get install -y \
     qtbase5-dev \
     qtchooser \
@@ -27,25 +27,18 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get install -y nodejs
-
-# Install Yarn globally
-RUN npm install -g yarn
-
 WORKDIR /app
 
 # Install Python packages
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Install frontend dependencies (npm or yarn)
-COPY package.json ./
-RUN yarn install
+# Copy the backend code
+COPY backend/ .
 
-# Copy the rest of the app
-COPY . .
+# Expose the port that FastAPI runs on
+EXPOSE 8000
 
 # Run the FastAPI app using Uvicorn
+CMD ["uvicorn", "fetch_tweets:app", "--host", "0.0.0.0", "--port", "8000"]
 CMD ["uvicorn", "fetch_tweets:app", "--reload"]
