@@ -1,17 +1,13 @@
 {
-  "builds": [
+  "buildCommand": "cd frontend/twitter-debate-analyzer && npm run build",
+  "outputDirectory": "frontend/twitter-debate-analyzer/dist",
+  "installCommand": "cd frontend/twitter-debate-analyzer && npm install",
+  "devCommand": "cd frontend/twitter-debate-analyzer && npm run dev",
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "frontend/twitter-debate-analyzer/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "frontend/twitter-debate-analyzer/dist/$1"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
